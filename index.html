@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpoint" content="width=device, initial-scale=1.0">
+    <title>My Todo List</title>
+</head>
+<body>
+    <h1>My Todo List</h1>
+    <input type="text" id="taskInput" placeholder="=Enter a task">
+    <button onclick="addTask()">Add task</button>
+    <u1 id="taskList"></u1>
+    <script>
+ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function renderTasks() {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+
+    tasks.forEach(function(task) {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+
+        span.textContent = task.text;
+
+        if (task.completed) {
+            span.style.textDecoration = "line-through";
+        }
+
+        const completeButton = document.createElement("button");
+        completeButton.textContent = task.completed ? "Undo" : "Complete";
+
+        completeButton.onclick = function() {
+            task.completed = !task.completed;
+            saveTasks();
+            renderTasks();
+        };
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+
+        deleteButton.onclick = function() {
+            tasks = tasks.filter(function(item) {
+                return item.id !== task.id;
+            });
+            saveTasks();
+            renderTasks();
+        };
+
+        li.appendChild(span);
+        li.appendChild(completeButton);
+        li.appendChild(deleteButton);
+        taskList.appendChild(li);
+    });
+}
+
+function addTask() {
+    const input = document.getElementById("taskInput");
+    const task = input.value.trim();
+
+    if (task === "") {
+        alert("Please enter a task!");
+        return;
+    }
+
+    tasks.push({
+        id: Date.now(),
+        text: task,
+        completed: false
+    });
+
+    saveTasks();
+    renderTasks();
+    input.value = "";
+}
+
+renderTasks();
+</script>
+        </body>
+        </html>
